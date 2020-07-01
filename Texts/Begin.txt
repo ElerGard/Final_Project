@@ -1,5 +1,8 @@
 I'm glad to see you.
 Now you can select you first pokemon.
+1 - Charmander
+2 - Pikachu
+3 - Squirtle
+4 - Bulbasaur
 Congratulations!!! Now you are a Pokemon trainer.
-...
 Go!!!
