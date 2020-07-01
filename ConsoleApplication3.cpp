@@ -17,19 +17,6 @@ vector<string> hum_names;
 //enum PBALLS { POKEBALL, GREATBALL, ULTRABALL};
 //enum TERRAIN {SEA, VOLCANO, FOREST};
 
-SIZEP IntToSIZEP(uint num)
-{
-    switch (num)
-    {
-    case 0:
-        return SMALL;
-    case 1:
-        return MEDIUM;
-    case 2:
-        return BIG;
-    }
-}
-
 TYPE IntToTYPE(uint num)
 {
     switch (num)
@@ -48,6 +35,33 @@ TYPE IntToTYPE(uint num)
 class Pokemon
 {
 public:
+    string TypeToStr()
+    {
+        switch (type)
+        {
+        case 0:
+            return "Fire";
+        case 1:
+            return "Water";
+        case 2:
+            return "Ground";
+        case 3:
+            return "Electric";
+        }
+    }
+
+    string SizeToStr()
+    {
+        switch (size)
+        {
+        case 0:
+            return "Small";
+        case 1:
+            return "Medium";
+        case 2:
+            return "Big";
+        }
+    }
     string name;
     SIZEP size;
     TYPE type;   
@@ -58,7 +72,6 @@ public:
     {
         return name;
     }
-
 };
 
 class BuilderPokemon
@@ -94,7 +107,7 @@ class BuilderSmallPokemon : public BuilderPokemon
 {
     void setType()
     {
-        Btype = IntToTYPE((rand() % 5) + 1);
+        Btype = IntToTYPE(rand() % 4);
     }
     void setSize()
     {
@@ -103,7 +116,7 @@ class BuilderSmallPokemon : public BuilderPokemon
     void setHpAp()
     {
         uint choose = rand();
-        Bhp = ((choose % 100) + 1);
+        Bhp = ((choose % 100) + 1) / 3;
         choose = (choose % 10) + 1;
         Bap = (choose * 3);
     }
@@ -125,7 +138,7 @@ class BuilderMediumPokemon : public BuilderPokemon
 {
     void setType()
     {
-        Btype = IntToTYPE((rand() % 5) + 1);
+        Btype = IntToTYPE(rand() % 4);
     }
     void setSize()
     {
@@ -156,7 +169,7 @@ class BuilderBigPokemon : public BuilderPokemon
 {
     void setType()
     {
-        Btype = IntToTYPE((rand() % 5) + 1);
+        Btype = IntToTYPE(rand() % 4);
     }
     void setSize()
     {
@@ -165,7 +178,7 @@ class BuilderBigPokemon : public BuilderPokemon
     void setHpAp()
     {
         uint choose = rand();
-        Bhp = ((choose % 100) + 1) / 3;
+        Bhp = ((choose % 100) + 1);
         choose = (choose % 10) + 1;
         Bap = (choose * 3) / 3;
     }
@@ -205,7 +218,6 @@ public:
             builder = new BuilderBigPokemon;
             break;
         }
-
         builder->setSize();
         builder->setHpAp();
         builder->setType();
@@ -241,7 +253,7 @@ class PokemonTrainer
         }
         an = std::stoi(res, nullptr, 10);
 
-        if (rand() % an == 0)
+        if (true)//rand() % an == 0)
         {
             pokemons.push_back(pok);
             return true;
@@ -267,7 +279,7 @@ public:
     {
         srand(time(NULL));
 
-        if (rand() % 3 == 0)
+        if (true)//rand() % 3 == 0)
         {
             return true;
         }
@@ -286,6 +298,8 @@ public:
             cout << (i + 1) << ". " << pokemons[i]->GetName()
                 << ". HP: " << pokemons[i]->hp
                 << ". AP: " << pokemons[i]->ap
+                << ". Type: " << pokemons[i]->TypeToStr()
+                << ". Size: " << pokemons[i]->SizeToStr()
                 << '\n';
         }
     }
