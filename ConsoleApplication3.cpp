@@ -397,14 +397,14 @@ class PokemonTrainer
             << "1 - Weak\n10 - Strong\n";
         cin >> res;
 
-        while (!(((res > "0") && (res < "9")) || (res == "10")))
+        while (!(((res > "0") && (res < "9")) && (res == "10")))
         {
             cout << "You did not answer\n";
             cin >> res;
         }
         an = std::stoi(res, nullptr, 10);
 
-        if (true)//rand() % an == 0)
+        if (rand() % an == 0)
         {
             pokemons.push_back(pok);
             return true;
@@ -432,7 +432,7 @@ public:
     {
         srand(time(NULL));
 
-        if (true)//rand() % 3 == 0)
+        if (rand() % 2 == 0)
         {
             return true;
         }
@@ -644,7 +644,7 @@ class GUI
                 break;
             }
             case 2:
-                if ((pok2->getHp() <= 15) && (main_character->pokeballs > 0))
+                if ((pok2->getHp() <= ((pok2->getMaxHp() / 100) * 15)) && (main_character->pokeballs > 0))
                 {
                     main_character->pokemons.push_back(pok2);
                     cout << "Congratulation! You were got a " << pok2->getName() << '\n';
