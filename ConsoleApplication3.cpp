@@ -11,7 +11,6 @@ typedef unsigned int uint;
 using namespace std;
 enum SIZEP { SMALL, MEDIUM, BIG };
 enum TYPE { FIRE, WATER, GROUND, ELECTRIC};
-enum ACTION { One, Two, Three, Four, Five };
 vector<string> pokenames;
 vector<string> hum_names;
 //enum PBALLS { POKEBALL, GREATBALL, ULTRABALL};
@@ -34,6 +33,13 @@ TYPE IntToTYPE(uint num)
 
 class Pokemon
 {
+private:
+    string name;
+    SIZEP size;
+    TYPE type;
+    uint hp;
+    uint ap;
+    vector<uint> action;
 public:
     string TypeToStr()
     {
@@ -62,136 +68,159 @@ public:
             return "Big";
         }
     }
-    string name;
-    SIZEP size;
-    TYPE type;   
-    uint hp;
-    uint ap;
 
-    string GetName()
+    string getName()
     {
         return name;
     }
+
+    uint getHp()
+    {
+        return hp;
+    }
+
+    uint getAp()
+    {
+        return ap;
+    }
+
+    friend class BuilderSmallPokemon;
+    friend class BuilderMediumPokemon;
+    friend class BuilderBigPokemon;
+
 };
 
-class BuilderPokemon
+class BuilderPokemon 
 {
-protected:
-    string Bname;
-    SIZEP Bsize;
-    TYPE Btype;
-    uint Bhp;
-    uint Bap;
-private:
-    virtual void setType() = 0;
-    virtual void setSize() = 0;
-    virtual void setHpAp() = 0;
-    virtual void setName()
-    {
-        if (pokenames.size() == 0)
-        {
-            Bname = "Default";
-        }
-        else
-        {
-            Bname = pokenames[rand() % pokenames.size()];            // TODO
-        }
-    }
+public:
+    virtual void setType() const = 0;
+    virtual void setSize() const = 0;
+    virtual void setHpAp() const = 0;
+    virtual void setName() const = 0;
     
-    virtual Pokemon* GetPokemon() = 0;
-
-    friend class Pokemons;
+    
+    virtual Pokemon* GetPokemon() const = 0;
 };
 
 class BuilderSmallPokemon : public BuilderPokemon
 {
-    void setType()
+    Pokemon* res = new Pokemon;
+
+    void setType() const override
     {
-        Btype = IntToTYPE(rand() % 4);
+        srand(time(NULL));
+        res->type = IntToTYPE(rand() % 4);
     }
-    void setSize()
+    void setSize() const override
     {
-        Bsize = SMALL;
+        res->size = SMALL;
     }
-    void setHpAp()
+    void setHpAp() const override
     {
+        srand(time(NULL));
         uint choose = rand();
-        Bhp = ((choose % 100) + 1) / 3;
+        res->hp = ((choose % 100) + 1) / 3;
         choose = (choose % 10) + 1;
-        Bap = (choose * 3);
+        res->ap = (choose * 3);
     }
 
-    Pokemon* GetPokemon()
+    void setName() const override
     {
-        Pokemon* res = new Pokemon;
-        res->size = Bsize;
-        res->hp = Bhp;
-        res->ap = Bap;
-        res->type = Btype;
-        res->name = Bname;
+        srand(time(NULL));
+        if (pokenames.size() == 0)
+        {
+            res->name = "Default";
+        }
+        else
+        {
+            res->name = pokenames[rand() % pokenames.size()];            // TODO
+        }
+    }
 
+    Pokemon* GetPokemon() const override
+    {
         return res;
     }
 };
 
 class BuilderMediumPokemon : public BuilderPokemon
 {
-    void setType()
+    Pokemon* res = new Pokemon;
+
+    void setType() const override
     {
-        Btype = IntToTYPE(rand() % 4);
+        srand(time(NULL));
+        res->type = IntToTYPE(rand() % 4);
     }
-    void setSize()
+    void setSize() const override
     {
-        Bsize = MEDIUM;
+        res->size = MEDIUM;
     }
-    void setHpAp()
+    void setHpAp() const override
     {
+        srand(time(NULL));
         uint choose = rand();
-        Bhp = ((choose % 100) + 1) / 2;
+        res->hp = ((choose % 100) + 1) / 2;
         choose = (choose % 10) + 1;
-        Bap = (choose * 3) / 2;
+        res->ap = (choose * 3) / 2;
     }
 
-    Pokemon* GetPokemon()
+    void setName() const override
     {
-        Pokemon* res = new Pokemon;
-        res->size = Bsize;
-        res->hp = Bhp;
-        res->ap = Bap;
-        res->type = Btype;
-        res->name = Bname;
+        srand(time(NULL));
+        if (pokenames.size() == 0)
+        {
+            res->name = "Default";
+        }
+        else
+        {
+            res->name = pokenames[rand() % pokenames.size()];            // TODO
+        }
+    }
 
+    Pokemon* GetPokemon() const override
+    {
         return res;
     }
 };
 
 class BuilderBigPokemon : public BuilderPokemon
 {
-    void setType()
+    Pokemon* res = new Pokemon;
+
+    void setType() const override
     {
-        Btype = IntToTYPE(rand() % 4);
+        srand(time(NULL));
+        res->type = IntToTYPE(rand() % 4);
     }
-    void setSize()
+    void setSize() const override
     {
-        Bsize = BIG;
+        res->size = BIG;
     }
-    void setHpAp()
+    void setHpAp() const override
     {
+        srand(time(NULL));
         uint choose = rand();
-        Bhp = ((choose % 100) + 1);
+        res->hp = ((choose % 100) + 1);
         choose = (choose % 10) + 1;
-        Bap = (choose * 3) / 3;
+        res->ap = (choose * 3) / 3;
     }
 
-    Pokemon* GetPokemon()
+    void setName() const override
     {
-        Pokemon* res = new Pokemon;
-        res->size = Bsize;
-        res->hp = Bhp;
-        res->ap = Bap;
-        res->type = Btype;
-        res->name = Bname;
+        srand(time(NULL));
+        if (pokenames.size() == 0)
+        {
+            res->name = "Default";
+        }
+        else
+        {
+            res->name = pokenames[rand() % pokenames.size()];            // TODO
+        }
+    }
 
+    Pokemon* GetPokemon() const override
+    {
         return res;
     }
 };
@@ -200,7 +229,6 @@ class Pokemons
 {
     BuilderPokemon* builder;
 public:
-
     Pokemon* CreateRandomPokemon()
     {
         srand(time(NULL));
@@ -295,9 +323,9 @@ public:
     {
         for (uint i = 0, u = pokemons.size(); i < u; i++)
         {
-            cout << (i + 1) << ". " << pokemons[i]->GetName()
-                << ". HP: " << pokemons[i]->hp
-                << ". AP: " << pokemons[i]->ap
+            cout << (i + 1) << ". " << pokemons[i]->getName()
+                << ". HP: " << pokemons[i]->getHp()
+                << ". AP: " << pokemons[i]->getAp()
                 << ". Type: " << pokemons[i]->TypeToStr()
                 << ". Size: " << pokemons[i]->SizeToStr()
                 << '\n';
@@ -455,9 +483,9 @@ public:
 
                         if (main_character.CatchPokemon(poki))
                         {
-                            cout << "Congratulation! You were got a " << poki->GetName() << '\n';
+                            cout << "Congratulation! You were got a " << poki->getName() << '\n';
                         }
-                        else cout << "You can't cath pokemon :(\n";
+                        else cout << "You can't catch pokemon :(\n";
                         if (main_character.pokeballs > 0)
                         {
                             main_character.pokeballs--;
@@ -473,11 +501,8 @@ public:
             default:
                 cout << "You did not answer\n";
             }
-
         }
         PlaySound(NULL, 0, 0);
-
-        
     }
 };
 
