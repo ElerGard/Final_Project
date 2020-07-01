@@ -432,7 +432,7 @@ public:
     {
         srand(time(NULL));
 
-        if (rand() % 2 == 0)
+        if (rand() % 3 == 0)
         {
             return true;
         }
@@ -644,22 +644,30 @@ class GUI
                 break;
             }
             case 2:
-                if ((pok2->getHp() <= ((pok2->getMaxHp() / 100) * 15)) && (main_character->pokeballs > 0))
+                if (main_character->pokeballs <= 0)
+                {
+                    cout << "You have not pokeballs\n";
+                    break;
+                }
+                if (pok2->getHp() <= ((pok2->getMaxHp() / 100) * 15))
                 {
                     main_character->pokemons.push_back(pok2);
                     cout << "Congratulation! You were got a " << pok2->getName() << '\n';
+                    this_thread::sleep_for(chrono::seconds(1));
+                    return;
                 }
                 else if (main_character->CatchPokemon(pok2))
                 {
                     cout << "Congratulation! You were got a " << pok2->getName() << '\n';
+                    this_thread::sleep_for(chrono::seconds(1));
+                    return;
                 }
                 else cout << "You can't catch pokemon :(\n";
                 if (main_character->pokeballs > 0)
                 {
                     main_character->pokeballs--;
                 }
-                this_thread::sleep_for(chrono::seconds(1));
-                return;
+                break;
             case 3:
                 cout << "You ran away\n";
                 this_thread::sleep_for(chrono::seconds(1));
@@ -851,6 +859,11 @@ public:
                 cout << "All pokemons restored\n";
                 break;
             case 4:
+                if (main_character->pokemons[0]->getHp() == 0)
+                {
+                    cout << "Go to Med Center first\n";
+                    break;
+                }
                 if (main_character->FindPokemon())
                 {
                     cout << "You are find the pokemon. Do you want to catch him?\n"
@@ -877,15 +890,6 @@ public:
                         system("cls");
                         PlaySound(NULL, 0, 0);
                         PlaySound(TEXT("Music\\BackgroundMusic.wav"), NULL, SND_ASYNC | SND_LOOP);
-                        /*if (main_character->CatchPokemon(poki))
-                        {
-                            cout << "Congratulation! You were got a " << poki->getName() << '\n';
-                        }
-                        else cout << "You can't catch pokemon :(\n";
-                        if (main_character->pokeballs > 0)
-                        {
-                            main_character->pokeballs--;
-                        }*/
                     }
                 }
                 else cout << "You can't find pokemon\n";
