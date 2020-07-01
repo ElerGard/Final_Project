@@ -134,6 +134,7 @@ public:                     //Sorry :(
         {
             pok->hp = 0;
         }
+        else
         pok->hp = dg;
     }
 
@@ -297,16 +298,16 @@ public:
         {
         case 1:
             builder = new BuilderSmallPokemon;    
-            ma_hp = ((choose % 100) + 1) / 3;
+            ma_hp = ((choose % 100) + 1);
             choose = (choose % 10) + 1;
             ma_ap = (choose * 3);
             builder->setHpAp(ma_hp, ma_ap);
             break;
         case 2:
             builder = new BuilderMediumPokemon;
-            ma_hp = ((choose % 100) + 1) / 2;
+            ma_hp = ((choose % 100) + 1);
             choose = (choose % 10) + 1;
-            ma_ap = (choose * 3) / 2;
+            ma_ap = (choose * 3) ;
             builder->setHpAp(ma_hp, ma_ap);
             break;
         case 3:
@@ -568,81 +569,75 @@ class GUI
                     if (pok1->getAp() == 0)
                     {
                         cout << pok1->getName() << " is tired. He is waiting\n";
-                        if (tp == WATER)
-                        {
-                            cout << pok1->getName() << " 2 Action point restored\n";
-                            pok1->addAp(2);
-                        }
-                        else
-                        {
-                            cout << pok1->getName() << " 1 Action point restored\n";
-                            pok1->addAp(1);
-                        }
+                        cout << pok1->getName() << " 1 Action point restored\n";
+                        pok1->addAp(1);
                         break;
                     }
                     if (dodge2 == false)
                     {
                         pok1->DoDamage(pok2);
                         pok1->ap--;
-                        if (tp == FIRE)
-                        {
-                            srand(time(NULL));
-                            if (rand() % 4 == 0)
-                            {
-                                pok1->DoDamage(pok2);
-                                cout << pok1->getName() << " deals " << (pok1->getDamage() * 2)
-                                    << " damage to " << pok2->getName() << '\n';
-                                break;
-                            }
-                        }
-                        else if (tp == ELECTRIC)
-                        {
-                            if (rand() % 8 == 0)
-                            {
-                                stun2 = true;
-                                cout << "The enemy is stunned\n";
-                                break;
-                            }
-                        }
                         cout << pok1->getName() << " deals " << pok1->getDamage()
                             << " damage to " << pok2->getName() << '\n';
                         break;
                     }
-                    cout << "Attack missed\n";
+                    pok1->ap--;
+                    cout << pok1->getName() << " attack missed\n";
                     break;
                 }
                 case 2:
-                    if (tp == WATER)
-                    {
-                        cout << pok1->getName() << " 2 Action point restored\n";
-                        pok1->addAp(2);
-                    }
-                    else
-                    {
-                        cout << pok1->getName() << " 1 Action point restored\n";
-                        pok1->addAp(1);
-                    }
+                    cout << pok1->getName() << " 1 Action point restored\n";
+                    pok1->addAp(1);
                     break;
                 case 3:
                     cout << "Pokemon dodge next attack\n";
                     dodge1 = true;
+                    pok1->ap--;
                     break;
                 case 4:
+
                     if (tp == FIRE)
                     {
-                        cout << "Attacks have a 25% chance of double damage\n";
+                        pok1->ap = pok1->ap - 3;
+                        srand(time(NULL));
+                        if (rand() % 2 == 0)
+                        {
+                            pok1->DoDamage(pok2);
+                            cout << pok1->getName() << " deals " << (pok1->getDamage() * 2)
+                                << " damage to " << pok2->getName() << '\n';
+                            break;
+                        }
+                        else
+                            cout << pok1->getName() << " attack missed\n";
+                        //cout << "Attacks have a 25% chance of double damage\n";
                     }
                     else if (tp == WATER)
                     {
-                        cout << "2 AP recovers while waiting\n";
+                        //cout << "2 AP recovers while waiting\n";
+                        cout << pok1->getName() << " 2 Action point restored\n";
+                        pok1->addAp(2);
                     }
                     else if (tp == ELECTRIC)
                     {
-                        cout << "Attacks have a 5% chance of stun pokemon\n";
+                        pok1->ap = pok1->ap - 3;
+                        srand(time(NULL));
+                        if (rand() % 2 == 0)
+                        {
+                            stun2 = true;
+                            cout << "The enemy is stunned\n";
+                            break;
+                        }
+                        else
+                            cout << pok1->getName() << " attack missed\n";
+                        //cout << "Attacks have a 5% chance of stun pokemon\n";
                     }
                     else if (tp == GRASS)
                     {
-                        cout << "Each round your pokemon restores 5% health\n";
+                        pok1->ap = pok1->ap - 2;
+                        //cout << "Each round your pokemon restores 5% health\n";
+                        uint heal = (pok1->getMaxHp() / 100) * 5;
+                        pok1->addHp(heal);
+                        cout << "Pokemon restore " << heal << " HP\n";
                     }
                     break;
                 }
@@ -670,12 +665,6 @@ class GUI
                 this_thread::sleep_for(chrono::seconds(1));
                 return;
             }
-            if (tp == GRASS)
-            {
-                uint heal = (pok1->getMaxHp() / 100) * 5;
-                pok1->addHp(heal);
-                cout << "Pokemon restore " << heal << " HP\n";
-            }
 
             if (stun2 == true)
             {
@@ -684,10 +673,28 @@ class GUI
             else
             if (pok2->getAp() > 0)
             {
-                pok2->DoDamage(pok1);
-                pok2->ap--;
-                cout << pok2->getName() << " deals " << pok2->getDamage()
-                    << " damage to " << pok1->getName() << '\n';
+                if (dodge1 != false)
+                {
+                    if (rand() % 2 == 1)
+                    {
+                        cout << pok2->getName() << " attack missed\n";
+                    }
+                    else
+                    {
+                        pok2->DoDamage(pok1);
+                        pok2->ap--;
+                        cout << pok2->getName() << " deals " << pok2->getDamage()
+                            << " damage to " << pok1->getName() << '\n';
+                    }
+                    dodge1 = false;
+                }
+                else
+                {
+                    pok2->DoDamage(pok1);
+                    pok2->ap--;
+                    cout << pok2->getName() << " deals " << pok2->getDamage()
+                        << " damage to " << pok1->getName() << '\n';
+                }
             }
             else
             {
@@ -695,7 +702,8 @@ class GUI
                 cout << pok2->getName() << " 1 Action point restored\n";
             }
         }
-        cout << "END\n";
+        cout << "Battle end\n";
+        this_thread::sleep_for(chrono::seconds(2));
         return;
     }
 public:
@@ -865,7 +873,7 @@ public:
                         system("cls");
                         cout << "Battle start!\n";
                         PlaySound(NULL, 0, 0);
-                        PokeFight(main_character->pokemons.back(), poki);
+                        PokeFight(main_character->pokemons[0], poki);
                         system("cls");
                         PlaySound(NULL, 0, 0);
                         PlaySound(TEXT("Music\\BackgroundMusic.wav"), NULL, SND_ASYNC | SND_LOOP);
