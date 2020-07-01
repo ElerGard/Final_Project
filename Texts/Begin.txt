@@ -1,0 +1,5 @@
+I'm glad to see you.
+Now you can select you first pokemon.
+Congratulations!!! Now you are a Pokemon trainer.
+...
+Go!!!
