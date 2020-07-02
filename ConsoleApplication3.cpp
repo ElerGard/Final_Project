@@ -426,6 +426,7 @@ class PokemonTrainer
         name = _name;
         pokeballs = 0;
         pokemons = pokes;
+        money = 0;
     }
 
 public:
@@ -435,6 +436,7 @@ public:
         name = _name;
         pokeballs = balls;
         pokemons.push_back(s_pok);
+        money = 0;
     }
 
     bool FindPokemon()
@@ -936,15 +938,38 @@ public:
             switch (SelectAction())
             {
             case 1:
+                cout << "My money: " << main_character->money << " conins\n";
                 cout << "The number of pokeballs: " << main_character->pokeballs << '\n';
                 cout << "My pokemons:\n";
                 main_character->Pokedex();
                 break;
             case 2:
-                cout << "How much balls do you want?\n";
-                cin >> count_m;
-                main_character->pokeballs += count_m;
-                break;
+                cout << "1 - pokeball cost 10 coins\n";
+                
+                    cout << "How much balls do you want?\n";
+                    cin >> count_m;
+                    if (count_m == 0)
+                    {
+                        cout << "Thanks for visiting\n";
+                        break;
+                    }
+                    if (main_character->money < 10)
+                    {
+                        cout << "You have not money\n";
+                        break;
+                    }
+                while (true)
+                {
+                    if (count_m * 10 <= main_character->money)
+                    {
+                        main_character->pokeballs += count_m;
+                        break;
+                    }
+                    else
+                    {
+                        cout << "You have not money\n";
+                    }
+                }
             case 3:
                 main_character->MedCenter();
                 cout << "All pokemons restored\n";
