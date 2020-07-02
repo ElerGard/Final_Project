@@ -56,7 +56,6 @@ public:
         }
     }
 
-
     string SizeToStr()
     {
         switch (size)
