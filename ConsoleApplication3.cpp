@@ -13,8 +13,6 @@ enum SIZEP { SMALL, MEDIUM, BIG };
 enum TYPE { FIRE, WATER, GRASS, ELECTRIC};
 vector<string> pokenames;
 vector<string> hum_names;
-//enum PBALLS { POKEBALL, GREATBALL, ULTRABALL};
-//enum TERRAIN {SEA, VOLCANO, FOREST};
 
 TYPE IntToTYPE(uint num)
 {
@@ -33,7 +31,7 @@ TYPE IntToTYPE(uint num)
 
 class Pokemon
 {
-public:                     //Sorry :(
+private:                   
     string name;
     SIZEP size;
     TYPE type;
@@ -41,8 +39,8 @@ public:                     //Sorry :(
     uint max_hp;
     uint ap;
     uint max_ap;
-    uint damage; // Scratch - 1, Wait - 2, Dodge - 3, Special - 4
-
+    uint damage; 
+public:
     string TypeToStr()
     {
         switch (type)
@@ -127,6 +125,16 @@ public:                     //Sorry :(
         ap += count;
     }
 
+    void subAp(uint count)
+    {
+        if (ap - count < 0)
+        {
+            ap = 0;
+        }
+        else
+            ap -= count;
+    }
+
     void DoDamage(Pokemon* pok)
     {
         int dg = pok->hp - damage;
@@ -181,7 +189,7 @@ class BuilderSmallPokemon : public BuilderPokemon
         }
         else
         {
-            res->name = pokenames[rand() % pokenames.size()];            // TODO
+            res->name = pokenames[rand() % pokenames.size()];            
         }
     }
 
@@ -224,7 +232,7 @@ class BuilderMediumPokemon : public BuilderPokemon
         }
         else
         {
-            res->name = pokenames[rand() % pokenames.size()];            // TODO
+            res->name = pokenames[rand() % pokenames.size()];            
         }
     }
 
@@ -266,7 +274,7 @@ class BuilderBigPokemon : public BuilderPokemon
         }
         else
         {
-            res->name = pokenames[rand() % pokenames.size()];            // TODO
+            res->name = pokenames[rand() % pokenames.size()];            
         }
     }
 
@@ -297,17 +305,17 @@ public:
         switch (coef)
         {
         case 1:
-            builder = new BuilderSmallPokemon;    
-            ma_hp = ((choose % 100) + 1);
+            builder = new BuilderSmallPokemon;   
             choose = (choose % 10) + 1;
+            ma_hp = (choose * 4 + 1);
             ma_ap = (choose * 3);
             builder->setHpAp(ma_hp, ma_ap);
             break;
         case 2:
             builder = new BuilderMediumPokemon;
-            ma_hp = ((choose % 100) + 1);
             choose = (choose % 10) + 1;
-            ma_ap = (choose * 3) ;
+            ma_hp = ((choose *7) + 1);
+            ma_ap = (choose * 2) ;
             builder->setHpAp(ma_hp, ma_ap);
             break;
         case 3:
@@ -382,6 +390,7 @@ class PokemonTrainer
 {
     string name;
     uint pokeballs;
+    uint money;
     vector<Pokemon*> pokemons;
 
     bool CatchPokemon(Pokemon *pok)
@@ -465,6 +474,7 @@ public:
             pokemons[i]->addAp(pokemons[i]->getMaxAp());
         }
     }
+
     friend class GUI;
 };
 
@@ -480,7 +490,7 @@ class GUI
         string res;
         cout << '\n'
             << "What would you want to do?" << '\n'
-            << "1. Show my inventory" << '\n'
+            << "1. Show my status" << '\n'
             << "2. Go to the shop" << '\n'
             << "3. Go to medicine center" << '\n'
             << "4. Try to find pokemon" << '\n'
@@ -505,15 +515,30 @@ class GUI
             << "What would you want to do?" << '\n'
             << "1. Actions" << '\n'
             << "2. Try to catch" << '\n'
-            << "3. Run away" << '\n';
+            << "3. Change pokemon" << '\n'
+            << "4. Run away" << '\n';
         cin >> res;
 
-        while (!((res > "0") && (res < "4")))
+        while (!((res > "0") && (res < "5")))
         {
             cout << "You did not answer\n";
             cin >> res;
+
+        }
+        
+        if ((res == "3") && (main_character->pokemons.size() == 1))
+        {
+            cout << "You have not pokemons to change\n";
+            while ((res > "0") && (res < "5") && (res == "3"))
+            {
+                cout << "You did not answer\n";
+                cin >> res;
+
+            }
         }
         int an = std::stoi(res, nullptr, 10);
+
+        
 
         return an;
     }
@@ -539,18 +564,60 @@ class GUI
         return an;
     }
 
+    Pokemon* ChangePokemon()
+    {
+        main_character->Pokedex();
+        int i = 0;
+        
+        do 
+        {
+            cout << "Please, select live pokemon\n";
+            cin >> i;
+            while ((i < 1) && (i > main_character->pokemons.size()))
+            {
+                cout << "Please, right correct number\n";
+                cin >> i;
+            }
+        } while (main_character->pokemons[i-1]->getHp() == 0);
+        return main_character->pokemons[i];
+    }
+
     void PokeFight(Pokemon* pok1, Pokemon* pok2)
     {
         PlaySound(TEXT("Music\\Battle.wav"), NULL, SND_ASYNC | SND_LOOP);
         this_thread::sleep_for(chrono::seconds(2));
 
-        bool stun1 = false;
-        bool stun2 = false;
+        uint stun1 = 0;
+        uint stun2 = 0;
         bool dodge1 = false;
         bool dodge2 = false;
+        
         TYPE tp = pok1->getType();
-        while ((pok1->getHp() > 0) && (pok2->getHp() > 0))
+        while (pok2->getHp() > 0)
         {
+            bool defeat = false;
+            uint i = 0;
+            while ((i < main_character->pokemons.size()) && (defeat))
+            {
+                if (main_character->pokemons[i]->getHp() != 0)
+                {
+                    defeat = true;
+                }
+                else
+                i++;
+            }
+
+            if (defeat)
+            {
+                cout << "You lose\n";
+                return;
+            }
+            if (pok1->getHp() == 0)
+            {
+                cout << "You must change pokemon. Please select pokemon\n";
+                pok1 = ChangePokemon();
+            }
+
             cout << "Your pokemon: " << pok1->getName() << '\n'
                 << "HP: " << pok1->getHp() << "\\" << pok1->getMaxHp() << '\n'
                 << "AP: " << pok1->getAp() << "\\" << pok1->getMaxAp() << '\n'
@@ -576,12 +643,12 @@ class GUI
                     if (dodge2 == false)
                     {
                         pok1->DoDamage(pok2);
-                        pok1->ap--;
+                        pok1->subAp(1);
                         cout << pok1->getName() << " deals " << pok1->getDamage()
                             << " damage to " << pok2->getName() << '\n';
                         break;
                     }
-                    pok1->ap--;
+                    pok1->subAp(1);
                     cout << pok1->getName() << " attack missed\n";
                     break;
                 }
@@ -592,13 +659,13 @@ class GUI
                 case 3:
                     cout << "Pokemon dodge next attack\n";
                     dodge1 = true;
-                    pok1->ap--;
+                    pok1->subAp(1);
                     break;
                 case 4:
 
                     if (tp == FIRE)
                     {
-                        pok1->ap = pok1->ap - 3;
+                        pok1->subAp(3);
                         srand(time(NULL));
                         if (rand() % 2 == 0)
                         {
@@ -619,11 +686,11 @@ class GUI
                     }
                     else if (tp == ELECTRIC)
                     {
-                        pok1->ap = pok1->ap - 3;
+                        pok1->subAp(2);
                         srand(time(NULL));
                         if (rand() % 2 == 0)
                         {
-                            stun2 = true;
+                            stun2 = 2;
                             cout << "The enemy is stunned\n";
                             break;
                         }
@@ -633,7 +700,7 @@ class GUI
                     }
                     else if (tp == GRASS)
                     {
-                        pok1->ap = pok1->ap - 2;
+                        pok1->subAp(2);
                         //cout << "Each round your pokemon restores 5% health\n";
                         uint heal = (pok1->getMaxHp() / 100) * 5;
                         pok1->addHp(heal);
@@ -669,14 +736,28 @@ class GUI
                 }
                 break;
             case 3:
+                
+                pok1 = ChangePokemon();
+            
+            case 4:
                 cout << "You ran away\n";
                 this_thread::sleep_for(chrono::seconds(1));
                 return;
             }
 
-            if (stun2 == true)
+            
+            if (stun2 > 0)
             {
-                cout << pok2->getName() << " skip";
+                stun2--;
+                if (stun2 != 0)
+                {
+                    cout << pok2->getName() << " skip\n";
+                }
+                else
+                {
+                    cout << pok2->getName() << " not stunned\n";
+                }
+
             }
             else
             if (pok2->getAp() > 0)
@@ -690,7 +771,7 @@ class GUI
                     else
                     {
                         pok2->DoDamage(pok1);
-                        pok2->ap--;
+                        pok2->subAp(1);
                         cout << pok2->getName() << " deals " << pok2->getDamage()
                             << " damage to " << pok1->getName() << '\n';
                     }
@@ -699,7 +780,7 @@ class GUI
                 else
                 {
                     pok2->DoDamage(pok1);
-                    pok2->ap--;
+                    pok2->subAp(1);
                     cout << pok2->getName() << " deals " << pok2->getDamage()
                         << " damage to " << pok1->getName() << '\n';
                 }
@@ -711,6 +792,17 @@ class GUI
             }
         }
         cout << "Battle end\n";
+        if (pok2->getHp() == 0)
+        {
+            srand(time(NULL));
+            uint mon = (rand() % 100);
+            main_character->money + mon + 1;
+            cout << "You got " << mon << " coins\n";
+        }
+        else
+        {
+            cout << "You lose\n";
+        }
         this_thread::sleep_for(chrono::seconds(2));
         return;
     }
@@ -835,7 +927,6 @@ public:
         }
         return;
     }
-
 
     void Game()
     {   
